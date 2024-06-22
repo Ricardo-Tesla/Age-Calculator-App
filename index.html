@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Age Calculator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+    <style>
+        body {
+            background-color: hsl(0, 0%, 86%);
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+
+
+        }
+
+        form {
+            background-color: hsl(0, 0%, 100%);
+            border-radius: 10px 10px 100px 10px;
+            padding: 50px;
+            width: 550px;
+            margin: 150px auto;
+        }
+
+        .labels {
+            display: flex;
+        }
+
+        .day,
+        .month,
+        .year {
+            display: grid;
+            grid-template-columns: auto;
+            margin-right: 30px;
+
+        }
+
+        input {
+            border-radius: 5px;
+            padding: 10px 5px;
+            width: 100px;
+            border: 1px solid hsl(0, 0%, 86%);
+            outline: none;
+            caret-color: hsl(259, 100%, 65%);
+            cursor: pointer;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        input:hover {
+            border: 1px solid hsl(259, 100%, 65%);
+        }
+
+        input:focus {
+            border: 1px solid hsl(259, 100%, 65%);
+        }
+
+        .margin-separator {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .horizontal-line {
+            flex-grow: 1;
+            height: 1px;
+            background-color: black;
+        }
+
+        button {
+            border: none;
+            border-radius: 100%;
+            padding: 20px;
+            background-color: hsl(259, 100%, 65%);
+        }
+
+        button:hover {
+            background-color: black;
+        }
+
+        img {
+            width: 40px;
+        }
+
+        span {
+            color: hsl(259, 100%, 65%);
+        }
+
+        p {
+            font-family: "Poppins", sans-serif;
+            font-weight: 800;
+            font-style: italic;
+            font-size: 50px;
+        }
+
+        .error {
+            color: hsl(0, 100%, 67%);
+            font-size: 10px;
+            display: none;
+        }
+
+        .error-border {
+            border: 1px solid hsl(0, 100%, 67%) !important;
+        }
+
+        @media (max-width: 600px) {
+            .margin-separator {
+                flex-direction: column;
+            }
+
+            button {
+                position: absolute;
+                top: 46%;
+
+            }
+
+            .horizontal-line {
+                width: 100%;
+                margin-top: 50px;
+                margin-bottom: 50px;
+            }
+        }
+    </style>
+
+    <main class="container col-12 custom-mobile custom-desktop d-flex justify-content-center align-items-center">
+        <form id="ageForm">
+            <div class="labels">
+                <div class="day">
+                    <label>DAY</label>
+                    <input type="text" id="day" placeholder="DD">
+                    <span class="error" id="dayError">This field is required</span>
+                </div>
+                <div class="month">
+                    <label>MONTH</label>
+                    <input type="text" id="month" placeholder="MM">
+                    <span class="error" id="monthError">This field is required</span>
+                </div>
+                <div class="year">
+                    <label>YEAR</label>
+                    <input type="text" id="year" placeholder="YYYY">
+                    <span class="error" id="yearError">This field is required</span>
+                </div>
+            </div>
+            <div class="margin-separator">
+                <div class="horizontal-line"></div>
+                <button type="button" onclick="calculateAge()"><img src="icon-arrow.svg" alt="icon-arrow"></button>
+            </div>
+            <p><span id="ageYears">--</span> years</p>
+            <p><span id="ageMonths">--</span> months</p>
+            <p><span id="ageDays">--</span> days</p>
+        </form>
+    </main>
+
+    <script>
+        function isLeapYear(year) {
+            return ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0));
+        }
+
+        function daysInMonth(month, year) {
+            switch (month) {
+                case 1: // January
+                case 3: // March
+                case 5: // May
+                case 7: // July
+                case 8: // August
+                case 10: // October
+                case 12: // December
+                    return 31;
+                case 4: // April
+                case 6: // June
+                case 9: // September
+                case 11: // November
+                    return 30;
+                case 2: // February
+                    return isLeapYear(year) ? 29 : 28;
+                default:
+                    return 0;
+            }
+        }
+
+        function validateForm() {
+            var isValid = true;
+
+            var day = document.getElementById('day').value;
+            var month = document.getElementById('month').value;
+            var year = document.getElementById('year').value;
+
+            var dayError = document.getElementById('dayError');
+            var monthError = document.getElementById('monthError');
+            var yearError = document.getElementById('yearError');
+
+            var dayInput = document.getElementById('day');
+            var monthInput = document.getElementById('month');
+            var yearInput = document.getElementById('year');
+
+            dayError.style.display = 'none';
+            monthError.style.display = 'none';
+            yearError.style.display = 'none';
+
+            dayInput.classList.remove('error-border');
+            monthInput.classList.remove('error-border');
+            yearInput.classList.remove('error-border');
+
+            if (day === '') {
+                dayError.textContent = 'This field is required';
+                dayError.style.display = 'block';
+                dayInput.classList.add('error-border');
+                isValid = false;
+            } else if (isNaN(day) || day < 1 || day > 31) {
+                dayError.textContent = 'Must be a valid day';
+                dayError.style.display = 'block';
+                dayInput.classList.add('error-border');
+                isValid = false;
+            }
+
+            if (month === '') {
+                monthError.textContent = 'This field is required';
+                monthError.style.display = 'block';
+                monthInput.classList.add('error-border');
+                isValid = false;
+            } else if (isNaN(month) || month < 1 || month > 12) {
+                monthError.textContent = 'Must be a valid month';
+                monthError.style.display = 'block';
+                monthInput.classList.add('error-border');
+                isValid = false;
+            }
+
+            if (year === '') {
+                yearError.textContent = 'This field is required';
+                yearError.style.display = 'block';
+                yearInput.classList.add('error-border');
+                isValid = false;
+            } else if (isNaN(year) || year < 1 || year > new Date().getFullYear()) {
+                yearError.textContent = 'Must be a valid year';
+                yearError.style.display = 'block';
+                yearInput.classList.add('error-border');
+                isValid = false;
+            }
+
+            if (isValid) {
+                var maxDays = daysInMonth(parseInt(month), parseInt(year));
+                if (day > maxDays) {
+                    dayError.textContent = 'Must be a valid day for the month';
+                    dayError.style.display = 'block';
+                    dayInput.classList.add('error-border');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        function calculateAge() {
+            if (!validateForm()) return;
+
+            var day = document.getElementById('day').value;
+            var month = document.getElementById('month').value;
+            var year = document.getElementById('year').value;
+
+            var birthDate = new Date(year, month - 1, day);
+            var currentDate = new Date();
+
+            var ageYears = currentDate.getFullYear() - birthDate.getFullYear();
+            var ageMonths = currentDate.getMonth() - birthDate.getMonth();
+            var ageDays = currentDate.getDate() - birthDate.getDate();
+
+            if (ageDays < 0) {
+                ageMonths--;
+                ageDays += new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+            }
+
+            if (ageMonths < 0) {
+                ageYears--;
+                ageMonths += 12;
+            }
+
+            document.getElementById('ageYears').textContent = ageYears;
+            document.getElementById('ageMonths').textContent = ageMonths;
+            document.getElementById('ageDays').textContent = ageDays;
+        }
+    </script>
+</body>
+
+</html>
